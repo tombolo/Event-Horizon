@@ -16,27 +16,41 @@ export default NextAuth({
             async authorize(credentials) {
                 const client = await clientPromise;
                 const db = client.db();
-                const users = db.collection('users');
 
                 if (!credentials?.email || !credentials?.password) {
-                    throw new Error('Missing email or password');
+                    console.error('Missing credentials');
+                    return null;
                 }
 
-                const user = await users.findOne({ email: credentials.email });
+                const user = await db.collection('users').findOne({ email: credentials.email });
 
                 if (!user) {
-                    throw new Error('No user found with this email');
+                    console.error('User not found:', credentials.email);
+                    return null;
                 }
 
-                const isValid = await bcrypt.compare(credentials.password, user.password);
-                if (!isValid) {
-                    throw new Error('Invalid password');
+                console.log('User from DB:', user);
+
+                if (!user.password) {
+                    console.error('Password is missing from user record');
+                    return null;
                 }
+
+                const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
+
+                console.log('Password match:', isPasswordCorrect);
+
+                if (!isPasswordCorrect) {
+                    console.error('Incorrect password for:', credentials.email);
+                    return null;
+                }
+
+                console.log('Authorized user:', user.email);
 
                 return {
-                    id: user._id.toString(), // Must return string
+                    id: user._id.toString(),
                     email: user.email,
-                    name: user.name || 'User',
+                    name: user.name || '',
                 };
             },
         }),
@@ -44,10 +58,10 @@ export default NextAuth({
     session: {
         strategy: 'jwt',
     },
+    secret: process.env.NEXTAUTH_SECRET,
     pages: {
         signIn: '/auth/signin',
     },
-    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
@@ -58,7 +72,7 @@ export default NextAuth({
             return token;
         },
         async session({ session, token }) {
-            if (session.user && token) {
+            if (token && session.user) {
                 session.user.id = token.id as string;
                 session.user.email = token.email as string;
                 session.user.name = token.name as string;

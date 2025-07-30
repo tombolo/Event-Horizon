@@ -1,4 +1,4 @@
-import { signIn } from 'next-auth/react';
+import { signIn, getSession } from 'next-auth/react';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import Link from 'next/link';
@@ -19,10 +19,12 @@ export default function SignInPage() {
             password,
         });
 
-        if (result?.error) {
-            setError(result.error);
-        } else {
+        const session = await getSession();
+
+        if (session) {
             router.push('/');
+        } else {
+            setError('Invalid email or password');
         }
     };
 
