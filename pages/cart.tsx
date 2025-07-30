@@ -1,13 +1,14 @@
-// pages/cart.tsx
 import React, { useEffect, useState } from 'react';
 import Header from '../components/Header';
 import { useRouter } from 'next/router';
-import { FiTrash2, FiChevronLeft } from 'react-icons/fi';
+import { useSession } from 'next-auth/react';
+import { FiTrash2, FiChevronLeft, FiLogIn } from 'react-icons/fi';
 
 const CartPage = () => {
     const [cart, setCart] = useState([]);
     const [isClient, setIsClient] = useState(false);
     const router = useRouter();
+    const { data: session, status } = useSession();
 
     useEffect(() => {
         setIsClient(true);
@@ -27,7 +28,6 @@ const CartPage = () => {
 
     const handleQuantityChange = (cartKey, quantity) => {
         const newQuantity = Math.max(1, Math.min(10, Number(quantity))) || 1;
-
         setCart(prev =>
             prev.map((item) =>
                 item.cartKey === cartKey ? { ...item, quantity: newQuantity } : item
@@ -41,6 +41,10 @@ const CartPage = () => {
 
     const handleCheckout = () => {
         router.push('/checkout');
+    };
+
+    const handleSignIn = () => {
+        router.push('/auth/signin?callbackUrl=/cart');
     };
 
     const totalAmount = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
@@ -176,12 +180,30 @@ const CartPage = () => {
                                 <span className="text-lg font-bold">Total</span>
                                 <span className="text-lg font-bold">${totalAmount.toFixed(2)}</span>
                             </div>
-                            <button
-                                onClick={handleCheckout}
-                                className="mt-6 w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all transform hover:scale-[1.02]"
-                            >
-                                Proceed to Checkout
-                            </button>
+
+                            {status === 'loading' ? (
+                                <button
+                                    disabled
+                                    className="mt-6 w-full bg-gray-300 text-white font-semibold py-3 px-8 rounded-xl shadow-lg cursor-not-allowed"
+                                >
+                                    Loading...
+                                </button>
+                            ) : session ? (
+                                <button
+                                    onClick={handleCheckout}
+                                    className="mt-6 w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-semibold py-3 px-8 rounded-xl shadow-lg transition-all transform hover:scale-[1.02]"
+                                >
+                                    Proceed to Checkout
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={handleSignIn}
+                                    className="mt-6 w-full bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-semibold py-3 px-8 rounded-xl shadow-lg transition-all transform hover:scale-[1.02] flex items-center justify-center"
+                                >
+                                    <FiLogIn className="mr-2" />
+                                    Sign In to Checkout
+                                </button>
+                            )}
                         </div>
                     </div>
                 )}
