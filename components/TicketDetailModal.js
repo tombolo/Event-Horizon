@@ -27,14 +27,15 @@ const TicketDetailModal = ({ event, onClose, onAddToCart }) => {
     setIsAddingToCart(true);
 
     const ticket = {
-      eventId: event.id,
+      id: event.id, // Make sure to include the event id
       title: event.title,
       artist: event.artist,
       date: event.date,
       image: event.image,
-      ticketType: selectedTicketType,
+      type: selectedTicketType, // Change from ticketType to type
       quantity: quantity,
       price: selectedTicketType === "general" ? event.price : event.price + 100,
+      cartKey: `${event.id}-${selectedTicketType}`, // Add cartKey here
     };
 
     // Simulate API call

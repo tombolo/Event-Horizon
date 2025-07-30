@@ -46,7 +46,7 @@ const Index = () => {
 
 
   const handleAddToCart = (ticket) => {
-    const cartKey = `${ticket.id}-${ticket.type}`; // make sure 'type' exists
+    const cartKey = `${ticket.id}-${ticket.type}`;
 
     setCart(prevCart => {
       const existing = prevCart.find(item => item.cartKey === cartKey);
