@@ -1,1 +1,14 @@
-{"/_app":"pages/_app.js","/_error":"pages/_error.js","/contact":"pages/contact.html","/about":"pages/about.html","/donate":"pages/donate.html","/gallery":"pages/gallery.html","/":"pages/index.html","/projects":"pages/projects.html","/testimonials":"pages/testimonials.html","/_document":"pages/_document.js","/404":"pages/404.html"}
+{
+  "/_error": "pages/_error.js",
+  "/_app": "pages/_app.js",
+  "/about": "pages/about.js",
+  "/contact": "pages/contact.js",
+  "/cart": "pages/cart.js",
+  "/donate": "pages/donate.js",
+  "/": "pages/index.js",
+  "/projects": "pages/projects.js",
+  "/testimonials": "pages/testimonials.js",
+  "/gallery": "pages/gallery.js",
+  "/tickets/[id]": "pages/tickets/[id].js",
+  "/_document": "pages/_document.js"
+}

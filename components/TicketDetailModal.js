@@ -1,8 +1,56 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiX, FiCalendar, FiClock, FiMapPin, FiStar } from "react-icons/fi";
+import {
+  FiX,
+  FiCalendar,
+  FiClock,
+  FiMapPin,
+  FiStar,
+  FiMinus,
+  FiPlus,
+} from "react-icons/fi";
 
-const TicketDetailModal = ({ event, onClose }) => {
+const TicketDetailModal = ({ event, onClose, onAddToCart }) => {
+  const [quantity, setQuantity] = useState(1);
+  const [selectedTicketType, setSelectedTicketType] = useState("general");
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+
+  if (!event) return null;
+
+  const handleQuantityChange = (newQuantity) => {
+    if (newQuantity < 1) return;
+    if (newQuantity > 10) return; // You can set your own max limit
+    setQuantity(newQuantity);
+  };
+
+  const handleAddToCart = () => {
+    setIsAddingToCart(true);
+
+    const ticket = {
+      eventId: event.id,
+      title: event.title,
+      artist: event.artist,
+      date: event.date,
+      image: event.image,
+      ticketType: selectedTicketType,
+      quantity: quantity,
+      price: selectedTicketType === "general" ? event.price : event.price + 100,
+    };
+
+    // Simulate API call
+    setTimeout(() => {
+      if (onAddToCart) {
+        onAddToCart(ticket);
+      }
+      setIsAddingToCart(false);
+      onClose();
+    }, 1000);
+  };
+
+  const ticketPrice =
+    selectedTicketType === "general" ? event.price : event.price + 100;
+  const totalPrice = ticketPrice * quantity;
+
   return (
     <AnimatePresence>
       <motion.div
@@ -86,33 +134,81 @@ const TicketDetailModal = ({ event, onClose }) => {
                 <h3 className="font-medium text-gray-900 mb-2">
                   Ticket Options
                 </h3>
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center p-3 border border-gray-200 rounded-lg">
-                    <div>
-                      <h4 className="font-medium">General Admission</h4>
-                      <p className="text-sm text-gray-500">
-                        Standing room only
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold">${event.price}</p>
-                      {event.originalPrice && (
-                        <p className="text-sm text-gray-500 line-through">
-                          ${event.originalPrice}
+                <div className="space-y-3 mb-6">
+                  <div
+                    className={`p-3 border rounded-lg cursor-pointer transition-all ${selectedTicketType === "general" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"}`}
+                    onClick={() => setSelectedTicketType("general")}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h4 className="font-medium">General Admission</h4>
+                        <p className="text-sm text-gray-500">
+                          Standing room only
                         </p>
-                      )}
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold">${event.price}</p>
+                        {event.originalPrice && (
+                          <p className="text-sm text-gray-500 line-through">
+                            ${event.originalPrice}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center p-3 border border-gray-200 rounded-lg">
-                    <div>
-                      <h4 className="font-medium">VIP Package</h4>
-                      <p className="text-sm text-gray-500">
-                        Early entry + perks
-                      </p>
+                  <div
+                    className={`p-3 border rounded-lg cursor-pointer transition-all ${selectedTicketType === "vip" ? "border-blue-500 bg-blue-50" : "border-gray-200 hover:border-gray-300"}`}
+                    onClick={() => setSelectedTicketType("vip")}
+                  >
+                    <div className="flex justify-between items-center">
+                      <div>
+                        <h4 className="font-medium">VIP Package</h4>
+                        <p className="text-sm text-gray-500">
+                          Early entry + perks
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold">${event.price + 100}</p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold">${event.price + 100}</p>
-                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="font-medium text-gray-900 mb-3">Quantity</h4>
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => handleQuantityChange(quantity - 1)}
+                      className="p-2 rounded-full hover:bg-gray-100 transition"
+                      disabled={quantity <= 1}
+                    >
+                      <FiMinus className="h-4 w-4 text-gray-600" />
+                    </button>
+                    <span className="mx-4 text-lg font-medium w-8 text-center">
+                      {quantity}
+                    </span>
+                    <button
+                      onClick={() => handleQuantityChange(quantity + 1)}
+                      className="p-2 rounded-full hover:bg-gray-100 transition"
+                      disabled={quantity >= 10}
+                    >
+                      <FiPlus className="h-4 w-4 text-gray-600" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex justify-between mb-2">
+                    <span className="text-gray-600">Price per ticket:</span>
+                    <span className="font-medium">${ticketPrice}</span>
+                  </div>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-gray-600">Quantity:</span>
+                    <span className="font-medium">{quantity}</span>
+                  </div>
+                  <div className="flex justify-between text-lg font-bold pt-2 border-t border-gray-200">
+                    <span>Total:</span>
+                    <span>${totalPrice}</span>
                   </div>
                 </div>
               </div>
@@ -122,8 +218,38 @@ const TicketDetailModal = ({ event, onClose }) => {
               <button className="flex-1 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold py-3 px-6 rounded-lg transition duration-300">
                 Buy Now
               </button>
-              <button className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-6 rounded-lg transition duration-300">
-                Add to Cart
+              <button
+                onClick={handleAddToCart}
+                disabled={isAddingToCart}
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium py-3 px-6 rounded-lg transition duration-300 flex items-center justify-center"
+              >
+                {isAddingToCart ? (
+                  <>
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
+                    </svg>
+                    Adding...
+                  </>
+                ) : (
+                  "Add to Cart"
+                )}
               </button>
             </div>
           </div>

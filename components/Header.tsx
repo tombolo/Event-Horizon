@@ -1,9 +1,12 @@
+import { useRouter } from 'next/router'; 
 import React, { useState } from 'react';
 import { FiSearch, FiShoppingCart, FiUser, FiMenu, FiX } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Header = () => {
+const Header = ({ cart = [] }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+  const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -15,6 +18,7 @@ const Header = () => {
         <div className="flex justify-between items-center h-16 md:h-20">
           {/* Logo & Brand Name */}
           <motion.div
+          onClick={() => router.push('/')}
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             className="flex-shrink-0 flex items-center"
@@ -78,13 +82,14 @@ const Header = () => {
               <FiSearch className="h-5 w-5 text-gray-600" />
             </motion.button>
             <motion.button
+              onClick={() => router.push('/cart')}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.95 }}
               className="p-2 rounded-full hover:bg-gray-100 transition relative"
             >
               <FiShoppingCart className="h-5 w-5 text-gray-600" />
               <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-sm">
-                3
+                {totalItems}
               </span>
             </motion.button>
             <motion.button
@@ -101,8 +106,8 @@ const Header = () => {
           <div className="md:hidden flex items-center space-x-4">
             <button className="p-2 rounded-full hover:bg-gray-100 transition relative">
               <FiShoppingCart className="h-5 w-5 text-gray-600" />
-              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                3
+              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center shadow-sm">
+                {totalItems}
               </span>
             </button>
             <button
