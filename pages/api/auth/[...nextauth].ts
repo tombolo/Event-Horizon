@@ -19,19 +19,23 @@ export default NextAuth({
                 const user = await db.collection('users').findOne({ email: credentials?.email });
 
                 if (!user) {
-                    console.log('No user found with email:', credentials?.email);
+                    console.error('User not found:', credentials?.email);
                     return null;
                 }
+
+                console.log('User found:', user);
 
                 const isValid = await bcrypt.compare(credentials?.password || '', user.password);
 
                 if (!isValid) {
-                    console.log('Invalid password for:', credentials?.email);
+                    console.error('Invalid password for:', credentials?.email);
                     return null;
                 }
 
+                console.log('Password valid, logging in');
                 return { id: user._id.toString(), email: user.email, name: user.name };
             }
+
         })
     ],
     session: {
