@@ -10,33 +10,39 @@ export default NextAuth({
         CredentialsProvider({
             name: 'Credentials',
             credentials: {
-                email: { label: "Email", type: "email" },
-                password: { label: "Password", type: "password" }
+                email: { label: 'Email', type: 'email' },
+                password: { label: 'Password', type: 'password' },
             },
             async authorize(credentials) {
                 const client = await clientPromise;
                 const db = client.db();
-                const user = await db.collection('users').findOne({ email: credentials?.email });
+
+                if (!credentials?.email || !credentials?.password) {
+                    console.error('Missing credentials');
+                    return null;
+                }
+
+                const user = await db.collection('users').findOne({ email: credentials.email });
 
                 if (!user) {
-                    console.error('User not found:', credentials?.email);
+                    console.error('User not found:', credentials.email);
                     return null;
                 }
 
-                console.log('User found:', user);
+                const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
 
-                const isValid = await bcrypt.compare(credentials?.password || '', user.password);
-
-                if (!isValid) {
-                    console.error('Invalid password for:', credentials?.email);
+                if (!isPasswordCorrect) {
+                    console.error('Incorrect password for:', credentials.email);
                     return null;
                 }
 
-                console.log('Password valid, logging in');
-                return { id: user._id.toString(), email: user.email, name: user.name };
-            }
-
-        })
+                return {
+                    id: user._id.toString(),
+                    email: user.email,
+                    name: user.name || '',
+                };
+            },
+        }),
     ],
     session: {
         strategy: 'jwt',
@@ -45,5 +51,22 @@ export default NextAuth({
     pages: {
         signIn: '/auth/signin',
     },
-    debug: true // Optional, helps you see errors in logs
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+                token.email = user.email;
+                token.name = user.name;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (token && session.user) {
+                session.user.id = token.id as string;
+                session.user.email = token.email as string;
+                session.user.name = token.name as string;
+            }
+            return session;
+        },
+    },
 });
