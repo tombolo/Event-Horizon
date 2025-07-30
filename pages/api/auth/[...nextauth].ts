@@ -1,26 +1,14 @@
-import NextAuth from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import clientPromise from "../../../lib/mongodb";
-import { compare } from "bcryptjs";
-
-declare module "next-auth" {
-    interface User {
-        balance?: number;
-    }
-    interface Session {
-        user: {
-            name?: string | null;
-            email?: string | null;
-            image?: string | null;
-            balance?: number;
-        };
-    }
-}
+import NextAuth from 'next-auth';
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { MongoDBAdapter } from '@next-auth/mongodb-adapter';
+import clientPromise from '../../../lib/mongodb';
+import bcrypt from 'bcryptjs';
 
 export default NextAuth({
+    adapter: MongoDBAdapter(clientPromise),
     providers: [
         CredentialsProvider({
-            name: "Credentials",
+            name: 'Credentials',
             credentials: {
                 email: { label: "Email", type: "email" },
                 password: { label: "Password", type: "password" }
@@ -28,41 +16,30 @@ export default NextAuth({
             async authorize(credentials) {
                 const client = await clientPromise;
                 const db = client.db();
-                const user = await db.collection("users").findOne({ email: credentials.email });
+                const user = await db.collection('users').findOne({ email: credentials?.email });
 
                 if (!user) {
-                    throw new Error("No user found with this email");
+                    console.log('No user found with email:', credentials?.email);
+                    return null;
                 }
 
-                const isValid = await compare(credentials.password, user.password);
+                const isValid = await bcrypt.compare(credentials?.password || '', user.password);
+
                 if (!isValid) {
-                    throw new Error("Incorrect password");
+                    console.log('Invalid password for:', credentials?.email);
+                    return null;
                 }
 
-                return {
-                    id: user._id.toString(),
-                    email: user.email,
-                    name: user.name,
-                    balance: user.balance ?? 0,
-                };
+                return { id: user._id.toString(), email: user.email, name: user.name };
             }
         })
     ],
     session: {
-        strategy: "jwt",
+        strategy: 'jwt',
     },
-    callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.balance = user.balance;
-            }
-            return token;
-        },
-        async session({ session, token }) {
-            if (token && session.user) {
-                session.user.balance = typeof token.balance === "number" ? token.balance : 0;
-            }
-            return session;
-        }
-    }
+    secret: process.env.NEXTAUTH_SECRET,
+    pages: {
+        signIn: '/auth/signin',
+    },
+    debug: true // Optional, helps you see errors in logs
 });
