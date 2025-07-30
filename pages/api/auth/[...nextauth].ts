@@ -16,30 +16,27 @@ export default NextAuth({
             async authorize(credentials) {
                 const client = await clientPromise;
                 const db = client.db();
+                const users = db.collection('users');
 
                 if (!credentials?.email || !credentials?.password) {
-                    console.error('Missing credentials');
-                    return null;
+                    throw new Error('Missing email or password');
                 }
 
-                const user = await db.collection('users').findOne({ email: credentials.email });
+                const user = await users.findOne({ email: credentials.email });
 
                 if (!user) {
-                    console.error('User not found:', credentials.email);
-                    return null;
+                    throw new Error('No user found with this email');
                 }
 
-                const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password);
-
-                if (!isPasswordCorrect) {
-                    console.error('Incorrect password for:', credentials.email);
-                    return null;
+                const isValid = await bcrypt.compare(credentials.password, user.password);
+                if (!isValid) {
+                    throw new Error('Invalid password');
                 }
 
                 return {
-                    id: user._id.toString(),
+                    id: user._id.toString(), // Must return string
                     email: user.email,
-                    name: user.name || '',
+                    name: user.name || 'User',
                 };
             },
         }),
@@ -47,10 +44,10 @@ export default NextAuth({
     session: {
         strategy: 'jwt',
     },
-    secret: process.env.NEXTAUTH_SECRET,
     pages: {
         signIn: '/auth/signin',
     },
+    secret: process.env.NEXTAUTH_SECRET,
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
@@ -61,7 +58,7 @@ export default NextAuth({
             return token;
         },
         async session({ session, token }) {
-            if (token && session.user) {
+            if (session.user && token) {
                 session.user.id = token.id as string;
                 session.user.email = token.email as string;
                 session.user.name = token.name as string;
