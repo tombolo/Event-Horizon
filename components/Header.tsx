@@ -1,9 +1,10 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-import { FiSearch, FiShoppingCart, FiUser, FiMenu, FiX, FiLogOut, FiDollarSign } from 'react-icons/fi';
+import { FiShoppingCart, FiUser, FiMenu, FiX, FiLogOut, FiDollarSign } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const Header = ({ cart = [] }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -92,49 +93,45 @@ const Header = ({ cart = [] }) => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
-            <motion.a
+            <motion.div
               whileHover={{ y: -2 }}
-              href="#"
-              className="font-medium text-gray-700 hover:text-purple-600 transition flex items-center group"
+              onClick={() => router.push('/concerts')}
+              className="font-medium text-gray-700 hover:text-purple-600 transition flex items-center group cursor-pointer"
             >
               Concerts
               <span className="ml-1 text-purple-500 opacity-0 group-hover:opacity-100 transition">→</span>
-            </motion.a>
-            <motion.a
+            </motion.div>
+
+            <motion.div
               whileHover={{ y: -2 }}
-              href="#"
-              className="font-medium text-gray-700 hover:text-purple-600 transition flex items-center group"
+              onClick={() => router.push('/sports')}
+              className="font-medium text-gray-700 hover:text-purple-600 transition flex items-center group cursor-pointer"
             >
               Sports
               <span className="ml-1 text-purple-500 opacity-0 group-hover:opacity-100 transition">→</span>
-            </motion.a>
-            <motion.a
+            </motion.div>
+
+            <motion.div
               whileHover={{ y: -2 }}
-              href="#"
-              className="font-medium text-gray-700 hover:text-purple-600 transition flex items-center group"
+              onClick={() => router.push('/festivals')}
+              className="font-medium text-gray-700 hover:text-purple-600 transition flex items-center group cursor-pointer"
             >
               Festivals
               <span className="ml-1 text-purple-500 opacity-0 group-hover:opacity-100 transition">→</span>
-            </motion.a>
-            <motion.a
+            </motion.div>
+
+            <motion.div
               whileHover={{ y: -2 }}
-              href="#"
-              className="font-medium text-gray-700 hover:text-purple-600 transition flex items-center group"
+              onClick={() => router.push('/theater')}
+              className="font-medium text-gray-700 hover:text-purple-600 transition flex items-center group cursor-pointer"
             >
               Theater
               <span className="ml-1 text-purple-500 opacity-0 group-hover:opacity-100 transition">→</span>
-            </motion.a>
+            </motion.div>
           </nav>
 
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-              className="p-2 rounded-full hover:bg-gray-100 transition"
-            >
-              <FiSearch className="h-5 w-5 text-gray-600" />
-            </motion.button>
             <motion.button
               onClick={() => router.push('/cart')}
               whileHover={{ scale: 1.1 }}
@@ -276,34 +273,46 @@ const Header = ({ cart = [] }) => {
             className="md:hidden bg-white shadow-lg overflow-hidden"
           >
             <div className="px-4 pt-2 pb-4 space-y-2">
-              <motion.a
+              <motion.div
                 whileHover={{ x: 5 }}
-                href="#"
-                className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-100"
+                onClick={() => {
+                  router.push('/concerts');
+                  setIsMenuOpen(false);
+                }}
+                className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-100 cursor-pointer"
               >
                 Concerts
-              </motion.a>
-              <motion.a
+              </motion.div>
+              <motion.div
                 whileHover={{ x: 5 }}
-                href="#"
-                className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-100"
+                onClick={() => {
+                  router.push('/sports');
+                  setIsMenuOpen(false);
+                }}
+                className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-100 cursor-pointer"
               >
                 Sports
-              </motion.a>
-              <motion.a
+              </motion.div>
+              <motion.div
                 whileHover={{ x: 5 }}
-                href="#"
-                className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-100"
+                onClick={() => {
+                  router.push('/festivals');
+                  setIsMenuOpen(false);
+                }}
+                className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-100 cursor-pointer"
               >
                 Festivals
-              </motion.a>
-              <motion.a
+              </motion.div>
+              <motion.div
                 whileHover={{ x: 5 }}
-                href="#"
-                className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-100"
+                onClick={() => {
+                  router.push('/theater');
+                  setIsMenuOpen(false);
+                }}
+                className="block px-3 py-3 rounded-md text-base font-medium text-gray-700 hover:bg-gray-100 border-b border-gray-100 cursor-pointer"
               >
                 Theater
-              </motion.a>
+              </motion.div>
 
               <div className="pt-4 border-t border-gray-200">
                 {status === 'authenticated' ? (

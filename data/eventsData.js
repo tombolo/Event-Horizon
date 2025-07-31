@@ -4,7 +4,6 @@ export const categories = [
   { id: "festivals", name: "Festivals" },
   { id: "sports", name: "Sports" },
   { id: "theater", name: "Theater" },
-  { id: "family", name: "Family" },
 ];
 
 export const featuredEvents = [

@@ -6,6 +6,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { categories } from '../data/eventsData';
 import TicketDetailModal from '../components/TicketDetailModal';
+import Counter from '../components/Counter';
 
 interface Event {
   _id: string;
@@ -31,7 +32,6 @@ interface CartItem {
   cartKey: string;
   title: string;
   price: number;
-  // Add other necessary ticket properties
 }
 
 const Index = () => {
@@ -43,6 +43,19 @@ const Index = () => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
+
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [searchQuery]);
 
   const fetchEvents = async () => {
     try {
@@ -97,9 +110,22 @@ const Index = () => {
     document.body.style.overflow = 'auto';
   };
 
+  const searchEvents = (query: string) => {
+    if (!query) return events;
+
+    const lowerCaseQuery = query.toLowerCase();
+    return events.filter(event =>
+      event.title.toLowerCase().includes(lowerCaseQuery) ||
+      event.artist.toLowerCase().includes(lowerCaseQuery) ||
+      event.venue.toLowerCase().includes(lowerCaseQuery) ||
+      event.location.toLowerCase().includes(lowerCaseQuery) ||
+      event.category.toLowerCase().includes(lowerCaseQuery)
+    );
+  };
+
   const filteredEvents = activeCategory === 'all'
-    ? events
-    : events.filter(event => event.category === activeCategory);
+    ? searchEvents(debouncedSearchQuery)
+    : searchEvents(debouncedSearchQuery).filter(event => event.category === activeCategory);
 
   const handleAddToCart = (ticket: CartItem) => {
     const cartKey = `${ticket.id}-${ticket.type}`;
@@ -185,9 +211,14 @@ const Index = () => {
                     type="text"
                     placeholder="Search events, artists, or venues..."
                     className="w-full pl-10 pr-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
-                <button className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold py-3 px-6 rounded-lg transition duration-300 shadow-lg">
+                <button
+                  onClick={() => setSearchQuery(searchQuery)}
+                  className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-bold py-3 px-6 rounded-lg transition duration-300 shadow-lg"
+                >
                   Find Tickets
                 </button>
               </div>
@@ -250,8 +281,16 @@ const Index = () => {
             className="flex justify-between items-center mb-8"
           >
             <div>
-              <h2 className="text-3xl font-bold">Featured Events</h2>
-              <p className="text-gray-600">Don't miss these incredible experiences</p>
+              <h2 className="text-3xl font-bold">
+                {debouncedSearchQuery
+                  ? `Search Results for "${debouncedSearchQuery}"`
+                  : 'Featured Events'}
+              </h2>
+              <p className="text-gray-600">
+                {debouncedSearchQuery
+                  ? `${filteredEvents.length} events found`
+                  : "Don't miss these incredible experiences"}
+              </p>
             </div>
             <button className="text-orange-500 font-medium hover:underline flex items-center">
               View all <FiChevronRight className="ml-1" />
@@ -287,7 +326,9 @@ const Index = () => {
             </div>
           ) : filteredEvents.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
-              No events found. Try another category.
+              {debouncedSearchQuery
+                ? `No events found for "${debouncedSearchQuery}". Try a different search.`
+                : 'No events found. Try another category.'}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -365,10 +406,10 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-r from-purple-900 to-blue-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute top-0 left-0 w-full h-full bg-[url('https://source.unsplash.com/random/1920x1080/?concert,crowd')] bg-cover bg-center opacity-20"></div>
-          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/80 to-blue-900/80"></div>
+      <section className="py-20 bg-gradient-to-br from-indigo-900 to-purple-900 text-white relative overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-20">
+          <div className="absolute inset-0 bg-[url('/images/abstract-grid.png')] bg-[length:40px_40px]"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/50 to-purple-900/50"></div>
         </div>
 
         <div className="max-w-6xl mx-auto px-4 relative z-10">
@@ -377,44 +418,84 @@ const Index = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Upcoming Mega Concerts</h2>
-            <p className="text-xl text-white/90 max-w-3xl mx-auto">Secure your spot at the most anticipated music events of the year</p>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">Creating Unforgettable Moments</h2>
+            <p className="text-xl text-white/90 max-w-3xl mx-auto">Join thousands of happy customers experiencing the magic of live events</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map(item => (
-              <motion.div
-                key={item}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.4 }}
-                className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-white/20"
-              >
-                <div className="p-6">
-                  <div className="flex items-center mb-4">
-                    <div className="w-16 h-16 bg-gray-300 rounded-lg mr-4"></div>
-                    <div>
-                      <h3 className="font-bold text-lg">Global Music Festival</h3>
-                      <p className="text-white/80 text-sm">June 15-17, 2024</p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <p className="text-white/60 text-sm">Starting from</p>
-                      <p className="font-bold text-xl">$199</p>
-                    </div>
-                    <button className="bg-white text-purple-900 font-medium py-2 px-4 rounded-lg hover:bg-gray-100 transition">
-                      View Details
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            {/* Tickets Sold Counter */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1, duration: 0.5 }}
+              className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:border-purple-400/50 transition-all"
+            >
+              <div className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400">
+                <Counter endValue={12543} duration={2} />
+                <span className="text-2xl">+</span>
+              </div>
+              <p className="text-white/80">Tickets Sold</p>
+            </motion.div>
+
+            {/* Events Hosted Counter */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:border-blue-400/50 transition-all"
+            >
+              <div className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">
+                <Counter endValue={872} duration={2} />
+              </div>
+              <p className="text-white/80">Events Hosted</p>
+            </motion.div>
+
+            {/* Happy Customers Counter */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:border-pink-400/50 transition-all"
+            >
+              <div className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-rose-400">
+                <Counter endValue={9842} duration={2} />
+                <span className="text-2xl">+</span>
+              </div>
+              <p className="text-white/80">Happy Customers</p>
+            </motion.div>
+
+            {/* Cities Covered Counter */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:border-green-400/50 transition-all"
+            >
+              <div className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-400">
+                <Counter endValue={56} duration={2} />
+              </div>
+              <p className="text-white/80">Cities Covered</p>
+            </motion.div>
           </div>
+
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.8, duration: 1 }}
+            className="mt-16 text-center"
+          >
+            <div className="inline-flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20">
+              <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse mr-2"></div>
+              <span className="text-sm font-medium">Live updates every minute</span>
+            </div>
+          </motion.div>
         </div>
       </section>
 
