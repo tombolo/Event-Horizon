@@ -146,13 +146,24 @@ const SportsPage = () => {
             <section className="relative h-[60vh] overflow-hidden">
                 <div className="absolute inset-0 bg-black/30 z-10"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-blue-900/80 to-green-900/80 z-10"></div>
-                <Image
-                    src="/events/sports-banner.jpg"
-                    alt="Sports banner"
-                    fill
-                    className="object-cover"
-                    priority
-                />
+                {/* Replace the Image component with a video element */}
+                <video
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="absolute inset-0 w-full h-full object-cover"
+                >
+                    <source src="/events/sports.mp4" type="video/mp4" />
+                    {/* Fallback image if video doesn't load */}
+                    <Image
+                        src="/events/sport.png"
+                        alt="Sports banner"
+                        fill
+                        className="object-cover"
+                        priority
+                    />
+                </video>
                 <div className="relative z-20 h-full flex flex-col justify-center px-4">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -311,10 +322,10 @@ const SportsPage = () => {
                 </div>
             </section>
 
-            <section className="py-20 bg-gradient-to-r from-blue-900 to-green-900 text-white relative overflow-hidden">
+            <section className="py-20 bg-gradient-to-b from-gray-900 to-gray-800 text-white relative overflow-hidden">
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://source.unsplash.com/random/1920x1080/?stadium,sports')] bg-cover bg-center opacity-20"></div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-green-900/80"></div>
+                    <div className="absolute top-0 left-0 w-full h-full bg-[url('/images/stadium-lights.jpg')] bg-cover bg-center opacity-30"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 to-gray-800/80"></div>
                 </div>
 
                 <div className="max-w-6xl mx-auto px-4 relative z-10">
@@ -323,44 +334,69 @@ const SportsPage = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="text-center mb-12"
+                        className="text-center mb-16"
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Season Tickets & Packages</h2>
-                        <p className="text-xl text-white/90 max-w-3xl mx-auto">Never miss a game with our season ticket packages</p>
+                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Ultimate Game Day Experiences</h2>
+                        <p className="text-xl text-white/90 max-w-3xl mx-auto">More than just seats - unforgettable moments that last a lifetime</p>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[1, 2, 3].map(item => (
+                        {[
+                            {
+                                title: "VIP Lounge Access",
+                                description: "Exclusive pre-game hospitality with gourmet catering",
+                                price: "+$199",
+                                icon: "🥂"
+                            },
+                            {
+                                title: "Meet & Greet",
+                                description: "Chance to meet players before the game",
+                                price: "Limited availability",
+                                icon: "🤝"
+                            },
+                            {
+                                title: "Fieldside Seats",
+                                description: "Best views right next to the action",
+                                price: "+$349",
+                                icon: "🎯"
+                            }
+                        ].map((experience, index) => (
                             <motion.div
-                                key={item}
+                                key={index}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 whileHover={{ y: -5 }}
                                 transition={{ duration: 0.4 }}
-                                className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-white/20"
+                                className="bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden shadow-lg border border-white/10 hover:border-yellow-400/30 transition-all duration-300"
                             >
-                                <div className="p-6">
-                                    <div className="flex items-center mb-4">
-                                        <div className="w-16 h-16 bg-gray-300 rounded-lg mr-4"></div>
-                                        <div>
-                                            <h3 className="font-bold text-lg">Season Ticket Package</h3>
-                                            <p className="text-white/80 text-sm">All home games 2024</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <p className="text-white/60 text-sm">Starting from</p>
-                                            <p className="font-bold text-xl">$1,299</p>
-                                        </div>
-                                        <button className="bg-white text-blue-900 font-medium py-2 px-4 rounded-lg hover:bg-gray-100 transition">
-                                            View Details
-                                        </button>
+                                <div className="p-8">
+                                    <div className="text-4xl mb-6">{experience.icon}</div>
+                                    <h3 className="font-bold text-xl mb-3 text-yellow-400">{experience.title}</h3>
+                                    <p className="text-white/80 mb-6">{experience.description}</p>
+                                    <div className="border-t border-white/10 pt-4">
+                                        <p className="text-white/60 text-sm">Experience upgrade</p>
+                                        <p className="font-medium text-lg">{experience.price}</p>
                                     </div>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
+
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.4, duration: 0.6 }}
+                        className="text-center mt-16 text-white/70"
+                    >
+                        <p className="text-lg">Every game tells a story - be part of it</p>
+                        <div className="flex justify-center mt-4 space-x-2">
+                            {['🏟️', '⚽', '🏀', '⚾', '🏒'].map((emoji, i) => (
+                                <span key={i} className="text-2xl opacity-80 hover:opacity-100 transition">{emoji}</span>
+                            ))}
+                        </div>
+                    </motion.div>
                 </div>
             </section>
 

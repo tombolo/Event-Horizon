@@ -406,38 +406,40 @@ const Index = () => {
         </div>
       </section>
 
-      <section className="py-20 bg-gradient-to-br from-indigo-900 to-purple-900 text-white relative overflow-hidden">
+      <section className="py-12 md:py-20 bg-gradient-to-br from-indigo-900 to-purple-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-20">
-          <div className="absolute inset-0 bg-[url('/images/abstract-grid.png')] bg-[length:40px_40px]"></div>
+          <div className="absolute inset-0 bg-[url('/images/abstract-grid.png')] bg-[length:30px_30px] md:bg-[length:40px_40px]"></div>
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-900/50 to-purple-900/50"></div>
         </div>
 
-        <div className="max-w-6xl mx-auto px-4 relative z-10">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-center mb-16"
+            className="text-center mb-10 md:mb-16"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Creating Unforgettable Moments</h2>
-            <p className="text-xl text-white/90 max-w-3xl mx-auto">Join thousands of happy customers experiencing the magic of live events</p>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 md:mb-4 px-2">Creating Unforgettable Moments</h2>
+            <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-3xl mx-auto px-4">
+              Join thousands of happy customers experiencing the magic of live events
+            </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
             {/* Tickets Sold Counter */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1, duration: 0.5 }}
-              className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:border-purple-400/50 transition-all"
+              className="bg-white/10 backdrop-blur-md rounded-lg md:rounded-xl p-4 sm:p-5 md:p-6 text-center border border-white/20 hover:border-purple-400/50 transition-all"
             >
-              <div className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-400">
                 <Counter endValue={12543} duration={2} />
-                <span className="text-2xl">+</span>
+                <span className="text-xl sm:text-2xl">+</span>
               </div>
-              <p className="text-white/80">Tickets Sold</p>
+              <p className="text-sm sm:text-base text-white/80">Tickets Sold</p>
             </motion.div>
 
             {/* Events Hosted Counter */}
@@ -446,12 +448,12 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:border-blue-400/50 transition-all"
+              className="bg-white/10 backdrop-blur-md rounded-lg md:rounded-xl p-4 sm:p-5 md:p-6 text-center border border-white/20 hover:border-blue-400/50 transition-all"
             >
-              <div className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-400">
                 <Counter endValue={872} duration={2} />
               </div>
-              <p className="text-white/80">Events Hosted</p>
+              <p className="text-sm sm:text-base text-white/80">Events Hosted</p>
             </motion.div>
 
             {/* Happy Customers Counter */}
@@ -460,13 +462,13 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3, duration: 0.5 }}
-              className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:border-pink-400/50 transition-all"
+              className="bg-white/10 backdrop-blur-md rounded-lg md:rounded-xl p-4 sm:p-5 md:p-6 text-center border border-white/20 hover:border-pink-400/50 transition-all"
             >
-              <div className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-rose-400">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-rose-400">
                 <Counter endValue={9842} duration={2} />
-                <span className="text-2xl">+</span>
+                <span className="text-xl sm:text-2xl">+</span>
               </div>
-              <p className="text-white/80">Happy Customers</p>
+              <p className="text-sm sm:text-base text-white/80">Happy Customers</p>
             </motion.div>
 
             {/* Cities Covered Counter */}
@@ -475,12 +477,12 @@ const Index = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4, duration: 0.5 }}
-              className="bg-white/10 backdrop-blur-md rounded-xl p-6 text-center border border-white/20 hover:border-green-400/50 transition-all"
+              className="bg-white/10 backdrop-blur-md rounded-lg md:rounded-xl p-4 sm:p-5 md:p-6 text-center border border-white/20 hover:border-green-400/50 transition-all"
             >
-              <div className="text-4xl md:text-5xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-400">
+              <div className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 sm:mb-3 text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-400">
                 <Counter endValue={56} duration={2} />
               </div>
-              <p className="text-white/80">Cities Covered</p>
+              <p className="text-sm sm:text-base text-white/80">Cities Covered</p>
             </motion.div>
           </div>
 
@@ -489,11 +491,11 @@ const Index = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.8, duration: 1 }}
-            className="mt-16 text-center"
+            className="mt-10 sm:mt-14 md:mt-16 text-center"
           >
-            <div className="inline-flex items-center bg-white/10 backdrop-blur-md px-6 py-3 rounded-full border border-white/20">
-              <div className="w-3 h-3 rounded-full bg-green-400 animate-pulse mr-2"></div>
-              <span className="text-sm font-medium">Live updates every minute</span>
+            <div className="inline-flex items-center bg-white/10 backdrop-blur-md px-4 py-2 sm:px-5 sm:py-2.5 md:px-6 md:py-3 rounded-full border border-white/20">
+              <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-green-400 animate-pulse mr-1.5 sm:mr-2"></div>
+              <span className="text-xs sm:text-sm font-medium">Live updates every minute</span>
             </div>
           </motion.div>
         </div>

@@ -130,13 +130,24 @@ const ConcertsPage = () => {
             <section className="relative h-[60vh] overflow-hidden ">
                 <div className="absolute inset-0 bg-black/30 z-10"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-purple-900/80 to-blue-900/80 z-10"></div>
-                <Image
-                    src="/events/concert-banner.jpg"
-                    alt="Concert banner"
-                    fill
-                    className="object-cover"
-                    priority
-                />
+                {/* Replace the Image component with a video element */}
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                    >
+                        <source src="/events/concert.mp4" type="video/mp4" />
+                        {/* Fallback image if video doesn't load */}
+                        <Image
+                            src="/events/sport.png"
+                            alt="Sports banner"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    </video>
                 <div className="relative z-20 h-full flex flex-col justify-center px-4">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -274,10 +285,11 @@ const ConcertsPage = () => {
                 </div>
             </section>
 
-            <section className="py-20 bg-gradient-to-r from-purple-900 to-blue-900 text-white relative overflow-hidden">
+            <section className="py-20 bg-gradient-to-b from-black to-gray-900 text-white relative overflow-hidden">
+                {/* Stage Light Effects */}
                 <div className="absolute inset-0 z-0">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://source.unsplash.com/random/1920x1080/?concert,crowd')] bg-cover bg-center opacity-20"></div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-900/80 to-blue-900/80"></div>
+                    <div className="absolute top-0 left-1/4 w-1/2 h-full bg-gradient-to-b from-yellow-500/10 to-transparent transform -skew-x-12"></div>
+                    <div className="absolute top-0 left-1/3 w-1/3 h-full bg-gradient-to-b from-blue-500/10 to-transparent transform skew-x-12"></div>
                 </div>
 
                 <div className="max-w-6xl mx-auto px-4 relative z-10">
@@ -286,68 +298,78 @@ const ConcertsPage = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="text-center mb-12"
+                        className="text-center mb-16"
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Featured Music Festivals</h2>
-                        <p className="text-xl text-white/90 max-w-3xl mx-auto">Multi-day experiences with your favorite artists</p>
+                        <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-yellow-400">Live Concerts</span> That Electrify
+                        </h2>
+                        <p className="text-xl text-white/80 max-w-3xl mx-auto">
+                            Feel the bass in your chest and the crowd's energy all around you
+                        </p>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[1, 2, 3].map(item => (
+                        {[
+                            {
+                                title: "Rock Legends",
+                                vibe: "Mosh pits & guitar solos",
+                                icon: "🎸",
+                                highlight: "Pyro shows included"
+                            },
+                            {
+                                title: "EDM Experience",
+                                vibe: "Laser light spectacular",
+                                icon: "🔊",
+                                highlight: "Dance floor access"
+                            },
+                            {
+                                title: "Acoustic Sessions",
+                                vibe: "Intimate & unplugged",
+                                icon: "🎶",
+                                highlight: "Meet-and-greet passes"
+                            }
+                        ].map((concert, index) => (
                             <motion.div
-                                key={item}
+                                key={index}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                whileHover={{ y: -5 }}
+                                whileHover={{ scale: 1.03 }}
                                 transition={{ duration: 0.4 }}
-                                className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-white/20"
+                                className="bg-white/5 backdrop-blur-sm rounded-xl overflow-hidden border border-white/10 hover:border-yellow-400/50 transition-all"
                             >
-                                <div className="p-6">
-                                    <div className="flex items-center mb-4">
-                                        <div className="w-16 h-16 bg-gray-300 rounded-lg mr-4"></div>
-                                        <div>
-                                            <h3 className="font-bold text-lg">Global Music Festival</h3>
-                                            <p className="text-white/80 text-sm">June 15-17, 2024</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <p className="text-white/60 text-sm">Starting from</p>
-                                            <p className="font-bold text-xl">$199</p>
-                                        </div>
-                                        <button className="bg-white text-purple-900 font-medium py-2 px-4 rounded-lg hover:bg-gray-100 transition">
-                                            View Details
-                                        </button>
+                                <div className="p-8 h-full flex flex-col items-center text-center">
+                                    <div className="text-5xl mb-6">{concert.icon}</div>
+                                    <h3 className="font-bold text-2xl mb-2 text-yellow-400">{concert.title}</h3>
+                                    <p className="text-white/80 mb-4">{concert.vibe}</p>
+                                    <div className="mt-auto pt-4 border-t border-white/10 w-full">
+                                        <p className="text-sm font-medium text-yellow-300">{concert.highlight}</p>
                                     </div>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
-                </div>
-            </section>
 
-            <section className="py-16 bg-gradient-to-r from-orange-500 to-yellow-500">
-                <div className="max-w-4xl mx-auto px-4 text-center">
+                    {/* Audio Wave Animation */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
+                        className="flex justify-center space-x-1 mt-16 h-12 items-end"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.6 }}
                     >
-                        <h2 className="text-3xl font-bold text-white mb-4">Get Concert Alerts</h2>
-                        <p className="text-white/90 text-xl mb-8">Be the first to know when your favorite artists announce new shows</p>
-
-                        <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
-                            <input
-                                type="email"
-                                placeholder="Your email address"
-                                className="flex-1 px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+                        {[2, 4, 6, 8, 10, 8, 6, 4, 2].map((height, i) => (
+                            <motion.div
+                                key={i}
+                                className="w-1 bg-yellow-400 rounded-t-sm"
+                                initial={{ height: 4 }}
+                                animate={{ height: [4, height, 4] }}
+                                transition={{
+                                    duration: 1.5,
+                                    repeat: Infinity,
+                                    delay: i * 0.1
+                                }}
                             />
-                            <button className="bg-purple-800 hover:bg-purple-900 text-white font-bold py-3 px-6 rounded-lg transition duration-300 shadow-lg">
-                                Subscribe
-                            </button>
-                        </div>
+                        ))}
                     </motion.div>
                 </div>
             </section>

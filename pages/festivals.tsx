@@ -160,13 +160,24 @@ const FestivalsPage = () => {
             <section className="relative h-[60vh] overflow-hidden">
                 <div className="absolute inset-0 bg-black/30 z-10"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-purple-900/80 to-pink-700/80 z-10"></div>
-                <Image
-                    src="/events/festival-banner.jpg"
-                    alt="Festival banner"
-                    fill
-                    className="object-cover"
-                    priority
-                />
+                {/* Replace the Image component with a video element */}
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                    >
+                        <source src="/events/festival.mp4" type="video/mp4" />
+                        {/* Fallback image if video doesn't load */}
+                        <Image
+                            src="/events/sport.png"
+                            alt="Sports banner"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    </video>
                 <div className="relative z-20 h-full flex flex-col justify-center px-4">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -325,10 +336,30 @@ const FestivalsPage = () => {
                 </div>
             </section>
 
-            <section className="py-20 bg-gradient-to-r from-purple-900 to-pink-800 text-white relative overflow-hidden">
-                <div className="absolute inset-0 z-0">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://source.unsplash.com/random/1920x1080/?festival,crowd')] bg-cover bg-center opacity-20"></div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-purple-900/80 to-pink-800/80"></div>
+            <section className="py-20 bg-gradient-to-b from-purple-900 to-indigo-900 text-white relative overflow-hidden">
+                {/* Animated background elements */}
+                <div className="absolute inset-0 z-0 opacity-20">
+                    <div className="absolute top-0 left-0 w-full h-full bg-[url('/images/festival-crowd.jpg')] bg-cover bg-center"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-purple-900/90 to-indigo-900/80"></div>
+                </div>
+
+                {/* Floating particles for festival vibe */}
+                <div className="absolute inset-0 z-0 overflow-hidden">
+                    {[...Array(20)].map((_, i) => (
+                        <div
+                            key={i}
+                            className="absolute rounded-full animate-float"
+                            style={{
+                                background: `rgba(255, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.7)`,
+                                width: `${Math.random() * 10 + 5}px`,
+                                height: `${Math.random() * 10 + 5}px`,
+                                top: `${Math.random() * 100}%`,
+                                left: `${Math.random() * 100}%`,
+                                animationDuration: `${Math.random() * 20 + 10}s`,
+                                animationDelay: `${Math.random() * 5}s`
+                            }}
+                        />
+                    ))}
                 </div>
 
                 <div className="max-w-6xl mx-auto px-4 relative z-10">
@@ -337,45 +368,106 @@ const FestivalsPage = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="text-center mb-12"
+                        className="text-center mb-16"
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">VIP Festival Packages</h2>
-                        <p className="text-xl text-white/90 max-w-3xl mx-auto">Elevate your experience with premium access</p>
+                        <h2 className="text-3xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 to-yellow-400">
+                            Festival Magic Awaits
+                        </h2>
+                        <p className="text-xl text-white/90 max-w-3xl mx-auto">
+                            Immerse yourself in unforgettable moments under the open sky
+                        </p>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[1, 2, 3].map(item => (
+                        {[
+                            {
+                                title: "Headliner Nights",
+                                description: "Front row to the biggest acts of the season",
+                                highlight: "Pyrotechnics & special effects included",
+                                icon: "🎤",
+                                color: "from-pink-500 to-purple-600"
+                            },
+                            {
+                                title: "VIP Oasis",
+                                description: "Exclusive lounge with premium amenities",
+                                highlight: "Private bars and premium viewing",
+                                icon: "🌟",
+                                color: "from-yellow-400 to-orange-500"
+                            },
+                            {
+                                title: "Campground Pass",
+                                description: "Wake up to music in our curated camping village",
+                                highlight: "Morning yoga & artist meetups",
+                                icon: "⛺",
+                                color: "from-green-400 to-teal-600"
+                            }
+                        ].map((experience, index) => (
                             <motion.div
-                                key={item}
+                                key={index}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
-                                whileHover={{ y: -5 }}
+                                whileHover={{ scale: 1.03 }}
                                 transition={{ duration: 0.4 }}
-                                className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-white/20"
+                                className={`bg-gradient-to-br ${experience.color} rounded-2xl overflow-hidden shadow-2xl`}
                             >
-                                <div className="p-6">
-                                    <div className="flex items-center mb-4">
-                                        <FiMusic className="w-16 h-16 text-pink-300 mr-4" />
-                                        <div>
-                                            <h3 className="font-bold text-lg">VIP Experience</h3>
-                                            <p className="text-white/80 text-sm">All-access passes</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <p className="text-white/60 text-sm">Starting from</p>
-                                            <p className="font-bold text-xl">$999</p>
-                                        </div>
-                                        <button className="bg-white text-purple-900 font-medium py-2 px-4 rounded-lg hover:bg-gray-100 transition">
-                                            View Details
-                                        </button>
+                                <div className="p-8 h-full flex flex-col">
+                                    <div className="text-5xl mb-6 text-center">{experience.icon}</div>
+                                    <h3 className="font-bold text-2xl mb-3 text-center">{experience.title}</h3>
+                                    <p className="text-white/90 mb-4 text-center">{experience.description}</p>
+                                    <div className="mt-auto pt-4 border-t border-white/20">
+                                        <p className="text-white/80 text-sm font-medium text-center">{experience.highlight}</p>
                                     </div>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
+
+                    {/* Festival vibe footer */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.4, duration: 0.6 }}
+                        className="text-center mt-16"
+                    >
+                        <p className="text-lg text-white/80 mb-4">The beat goes on...</p>
+                        <div className="flex justify-center space-x-1">
+                            {['🎪', '🎡', '🎷', '🥁', '🎨', '🌈', '🎭'].map((emoji, i) => (
+                                <motion.span
+                                    key={i}
+                                    className="text-3xl inline-block"
+                                    animate={{
+                                        y: [0, -10, 0],
+                                        rotate: [0, Math.random() > 0.5 ? 10 : -10, 0]
+                                    }}
+                                    transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        repeatType: "reverse",
+                                        delay: i * 0.2
+                                    }}
+                                >
+                                    {emoji}
+                                </motion.span>
+                            ))}
+                        </div>
+                    </motion.div>
                 </div>
+
+                {/* Add this to your global CSS */}
+                <style jsx>{`
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+            100% { transform: translateY(0) rotate(0deg); }
+        }
+        .animate-float {
+            animation-name: float;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+    `}</style>
             </section>
 
             <section className="py-16 bg-gradient-to-r from-yellow-400 to-pink-500">

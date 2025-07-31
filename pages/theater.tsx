@@ -148,13 +148,24 @@ const TheaterPage = () => {
             <section className="relative h-[60vh] overflow-hidden">
                 <div className="absolute inset-0 bg-black/30 z-10"></div>
                 <div className="absolute inset-0 bg-gradient-to-b from-red-900/80 to-amber-900/80 z-10"></div>
-                <Image
-                    src="/events/theater-banner.jpg"
-                    alt="Theater banner"
-                    fill
-                    className="object-cover"
-                    priority
-                />
+                {/* Replace the Image component with a video element */}
+                    <video
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        className="absolute inset-0 w-full h-full object-cover"
+                    >
+                        <source src="/events/theater.mp4" type="video/mp4" />
+                        {/* Fallback image if video doesn't load */}
+                        <Image
+                            src="/events/sport.png"
+                            alt="Sports banner"
+                            fill
+                            className="object-cover"
+                            priority
+                        />
+                    </video>
                 <div className="relative z-20 h-full flex flex-col justify-center px-4">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -320,11 +331,15 @@ const TheaterPage = () => {
                 </div>
             </section>
 
-            <section className="py-20 bg-gradient-to-r from-red-900 to-amber-900 text-white relative overflow-hidden">
-                <div className="absolute inset-0 z-0">
-                    <div className="absolute top-0 left-0 w-full h-full bg-[url('https://source.unsplash.com/random/1920x1080/?theater,stage')] bg-cover bg-center opacity-20"></div>
-                    <div className="absolute inset-0 bg-gradient-to-r from-red-900/80 to-amber-900/80"></div>
+            <section className="py-20 bg-gradient-to-b from-gray-900 to-gray-800 text-white relative overflow-hidden">
+                {/* Theater Curtain Effect */}
+                <div className="absolute inset-0 z-0 flex justify-between pointer-events-none">
+                    <div className="w-1/4 h-full bg-gradient-to-r from-red-900/80 to-transparent"></div>
+                    <div className="w-1/4 h-full bg-gradient-to-l from-red-900/80 to-transparent"></div>
                 </div>
+
+                {/* Spotlight Effect */}
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 rounded-full bg-yellow-500/5 filter blur-3xl z-0"></div>
 
                 <div className="max-w-6xl mx-auto px-4 relative z-10">
                     <motion.div
@@ -332,44 +347,69 @@ const TheaterPage = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
-                        className="text-center mb-12"
+                        className="text-center mb-16"
                     >
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">Season Subscriptions</h2>
-                        <p className="text-xl text-white/90 max-w-3xl mx-auto">Enjoy the best seats for the entire season</p>
+                        <h2 className="text-4xl md:text-5xl font-bold mb-4">
+                            <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-amber-600">Theatrical</span> Masterpieces
+                        </h2>
+                        <p className="text-xl text-white/80 max-w-3xl mx-auto">
+                            Where every curtain rise unveils a world of drama and wonder
+                        </p>
                     </motion.div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {[1, 2, 3].map(item => (
+                        {[
+                            {
+                                title: "Broadway Hits",
+                                description: "Tony Award-winning productions",
+                                icon: "🎭",
+                                highlight: "Orchestra seating available"
+                            },
+                            {
+                                title: "Classical Ballet",
+                                description: "Timeless stories through dance",
+                                icon: "🩰",
+                                highlight: "Post-show receptions"
+                            },
+                            {
+                                title: "Shakespearean",
+                                description: "The Bard's works under the stars",
+                                icon: "📜",
+                                highlight: "Open-air performances"
+                            }
+                        ].map((show, index) => (
                             <motion.div
-                                key={item}
+                                key={index}
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
                                 whileHover={{ y: -5 }}
                                 transition={{ duration: 0.4 }}
-                                className="bg-white/10 backdrop-blur-md rounded-xl overflow-hidden shadow-lg border border-white/20"
+                                className="bg-white/5 backdrop-blur-sm rounded-lg overflow-hidden border border-white/10 hover:border-amber-400/30 transition-all"
                             >
-                                <div className="p-6">
-                                    <div className="flex items-center mb-4">
-                                        <FiAward className="w-16 h-16 text-amber-300 mr-4" />
-                                        <div>
-                                            <h3 className="font-bold text-lg">Season Package</h3>
-                                            <p className="text-white/80 text-sm">2024-2025 Season</p>
-                                        </div>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <div>
-                                            <p className="text-white/60 text-sm">Starting from</p>
-                                            <p className="font-bold text-xl">$499</p>
-                                        </div>
-                                        <button className="bg-white text-red-900 font-medium py-2 px-4 rounded-lg hover:bg-gray-100 transition">
-                                            View Details
-                                        </button>
+                                <div className="p-8 h-full flex flex-col items-center text-center">
+                                    <div className="text-5xl mb-6 text-amber-300">{show.icon}</div>
+                                    <h3 className="font-bold text-2xl mb-2">{show.title}</h3>
+                                    <p className="text-white/80 mb-4 italic">{show.description}</p>
+                                    <div className="mt-auto pt-4 border-t border-white/10 w-full">
+                                        <p className="text-sm font-medium text-amber-300">{show.highlight}</p>
                                     </div>
                                 </div>
                             </motion.div>
                         ))}
                     </div>
+
+                    {/* Theater Mask Decoration */}
+                    <motion.div
+                        className="flex justify-center mt-16"
+                        initial={{ opacity: 0 }}
+                        whileInView={{ opacity: 1 }}
+                        viewport={{ once: true }}
+                    >
+                        <div className="text-6xl" style={{ textShadow: '0 0 15px rgba(255, 215, 0, 0.7)' }}>
+                            🎭
+                        </div>
+                    </motion.div>
                 </div>
             </section>
 
