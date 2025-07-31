@@ -1,17 +1,69 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiSearch, FiMapPin, FiCalendar, FiClock, FiStar, FiChevronRight } from 'react-icons/fi';
+import Image from 'next/image';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import { categories, featuredEvents } from '../data/eventsData';
+import { categories } from '../data/eventsData';
 import TicketDetailModal from '../components/TicketDetailModal';
+
+interface Event {
+  _id: string;
+  title: string;
+  artist: string;
+  description?: string;
+  date: string;
+  time: string;
+  venue: string;
+  location: string;
+  category: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  seatsLeft: number;
+  rating: number;
+}
+
+interface CartItem {
+  id: string;
+  type: string;
+  quantity: number;
+  cartKey: string;
+  title: string;
+  price: number;
+  // Add other necessary ticket properties
+}
 
 const Index = () => {
   const [activeCategory, setActiveCategory] = useState('all');
   const [videoLoaded, setVideoLoaded] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [loadingEvents, setLoadingEvents] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchEvents = async () => {
+    try {
+      const res = await fetch('/api/events');
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+      const data = await res.json();
+      setEvents(data.events || []);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to fetch events:', err);
+      setError('Failed to load events. Please try again later.');
+      setEvents([]);
+    } finally {
+      setLoadingEvents(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEvents();
+  }, []);
 
   useEffect(() => {
     const timer = setTimeout(() => setVideoLoaded(true), 1500);
@@ -20,15 +72,21 @@ const Index = () => {
 
   useEffect(() => {
     const savedCart = localStorage.getItem('eventCart');
-    if (savedCart) setCart(JSON.parse(savedCart));
+    if (savedCart) {
+      try {
+        setCart(JSON.parse(savedCart));
+      } catch (err) {
+        console.error('Failed to parse cart:', err);
+        localStorage.removeItem('eventCart');
+      }
+    }
   }, []);
 
-  // Save cart whenever it changes
   useEffect(() => {
     localStorage.setItem('eventCart', JSON.stringify(cart));
   }, [cart]);
 
-  const handleTicketClick = (event) => {
+  const handleTicketClick = (event: Event) => {
     setSelectedEvent(event);
     setShowModal(true);
     document.body.style.overflow = 'hidden';
@@ -40,12 +98,10 @@ const Index = () => {
   };
 
   const filteredEvents = activeCategory === 'all'
-    ? featuredEvents
-    : featuredEvents.filter(event => event.category === activeCategory);
+    ? events
+    : events.filter(event => event.category === activeCategory);
 
-
-
-  const handleAddToCart = (ticket) => {
+  const handleAddToCart = (ticket: CartItem) => {
     const cartKey = `${ticket.id}-${ticket.type}`;
 
     setCart(prevCart => {
@@ -61,11 +117,19 @@ const Index = () => {
     });
   };
 
+  const formatEventDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    });
+  };
+
   return (
     <>
       <Header cart={cart} />
 
-      {/* Ticket Modal Component */}
       {showModal && selectedEvent && (
         <TicketDetailModal
           event={selectedEvent}
@@ -74,7 +138,6 @@ const Index = () => {
         />
       )}
 
-      {/* Hero Video Section */}
       <section className="relative h-screen overflow-hidden">
         {!videoLoaded ? (
           <div className="absolute inset-0 bg-gradient-to-br from-purple-900 to-blue-900 flex items-center justify-center">
@@ -142,7 +205,6 @@ const Index = () => {
         </motion.div>
       </section>
 
-      {/* Categories */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
@@ -178,7 +240,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Featured Events */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
@@ -197,79 +258,113 @@ const Index = () => {
             </button>
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {filteredEvents.map(event => (
-              <motion.div
-                key={event.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -5 }}
-                transition={{ duration: 0.4 }}
-                className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300"
+          {loadingEvents ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {[...Array(3)].map((_, i) => (
+                <div key={i} className="bg-white rounded-xl overflow-hidden shadow-md">
+                  <div className="animate-pulse">
+                    <div className="bg-gray-200 h-48 w-full"></div>
+                    <div className="p-6 space-y-4">
+                      <div className="h-6 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                      <div className="h-4 bg-gray-200 rounded w-full"></div>
+                      <div className="h-10 bg-gray-200 rounded w-full"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-500 mb-4">{error}</p>
+              <button
+                onClick={fetchEvents}
+                className="bg-gradient-to-r from-yellow-400 to-orange-500 text-black font-medium py-2 px-4 rounded-lg"
               >
-                <div className="relative">
-                  <img
-                    src={event.image}
-                    alt={event.title}
-                    className="w-full h-48 object-cover"
-                    loading="lazy"
-                  />
-                  <div className="absolute top-4 right-4 bg-white text-orange-500 font-bold px-3 py-1 rounded-full text-sm shadow flex items-center">
-                    <FiStar className="mr-1" /> {event.rating}
-                  </div>
-                  {event.seatsLeft < 50 && (
-                    <div className="absolute bottom-4 left-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
-                      Only {event.seatsLeft} left!
+                Retry
+              </button>
+            </div>
+          ) : filteredEvents.length === 0 ? (
+            <div className="text-center py-12 text-gray-500">
+              No events found. Try another category.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {filteredEvents.map(event => (
+                <motion.div
+                  key={event._id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.4 }}
+                  className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition duration-300"
+                >
+                  <div className="relative">
+                    <Image
+                      src={event.image}
+                      alt={event.title}
+                      width={400}
+                      height={300}
+                      className="w-full h-48 object-cover"
+                      priority={false}
+                    />
+                    <div className="absolute top-4 right-4 bg-white text-orange-500 font-bold px-3 py-1 rounded-full text-sm shadow flex items-center">
+                      <FiStar className="mr-1" /> {event.rating}
                     </div>
-                  )}
-                </div>
-
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-xl font-bold text-gray-800">{event.title}</h3>
-                    <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                      {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
-                    </span>
+                    {event.seatsLeft < 50 && (
+                      <div className="absolute bottom-4 left-4 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                        Only {event.seatsLeft} left!
+                      </div>
+                    )}
                   </div>
 
-                  <p className="text-gray-600 mb-1">{event.artist}</p>
-
-                  <div className="flex items-center text-sm text-gray-500 mb-4">
-                    <FiCalendar className="mr-1" />
-                    {new Date(event.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    <span className="mx-2">•</span>
-                    <FiClock className="mr-1" />
-                    {event.time}
-                  </div>
-
-                  <div className="flex items-center text-sm text-gray-500 mb-4">
-                    <FiMapPin className="mr-1" />
-                    {event.venue}, {event.location}
-                  </div>
-
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <span className="text-2xl font-bold text-gray-900">${event.price}</span>
-                      {event.originalPrice && (
-                        <span className="ml-2 text-sm text-gray-500 line-through">${event.originalPrice}</span>
-                      )}
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="text-xl font-bold text-gray-800">{event.title}</h3>
+                      <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                        {event.category.charAt(0).toUpperCase() + event.category.slice(1)}
+                      </span>
                     </div>
-                    <button
-                      onClick={() => handleTicketClick(event)}
-                      className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-medium py-2 px-4 rounded-lg transition duration-300"
-                    >
-                      Get Tickets
-                    </button>
+
+                    <p className="text-gray-600 mb-1">{event.artist}</p>
+
+                    <div className="flex items-center text-sm text-gray-500 mb-4">
+                      <FiCalendar className="mr-1" />
+                      {formatEventDate(event.date)}
+                      <span className="mx-2">•</span>
+                      <FiClock className="mr-1" />
+                      {event.time}
+                    </div>
+
+                    <div className="flex items-center text-sm text-gray-500 mb-4">
+                      <FiMapPin className="mr-1" />
+                      {event.venue}, {event.location}
+                    </div>
+
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <span className="text-2xl font-bold text-gray-900">${event.price.toFixed(2)}</span>
+                        {event.originalPrice && (
+                          <span className="ml-2 text-sm text-gray-500 line-through">${event.originalPrice.toFixed(2)}</span>
+                        )}
+                      </div>
+                      <button
+                        onClick={() => handleTicketClick(event)}
+                        className="bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black font-medium py-2 px-4 rounded-lg transition duration-300"
+                      >
+                        Get Tickets
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
-      {/* Upcoming Concerts Banner */}
       <section className="py-20 bg-gradient-to-r from-purple-900 to-blue-900 text-white relative overflow-hidden">
         <div className="absolute inset-0 z-0">
           <div className="absolute top-0 left-0 w-full h-full bg-[url('https://source.unsplash.com/random/1920x1080/?concert,crowd')] bg-cover bg-center opacity-20"></div>
@@ -323,7 +418,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
       <section className="py-16 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <motion.div
@@ -369,7 +463,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Newsletter */}
       <section className="py-16 bg-gradient-to-r from-orange-500 to-yellow-500">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <motion.div
